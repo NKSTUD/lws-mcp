@@ -46,7 +46,15 @@ Un assistant qui touche à vos DNS peut couper un site ou une boîte mail, et un
 
 ## Installation
 
-### Claude Code
+Tous les clients lancent la même commande, `uvx --from git+https://github.com/NKSTUD/lws-mcp lws-mcp`, avec `LWS_LOGIN` et `LWS_API_KEY` dans son environnement (réglages facultatifs dans [Configuration](#configuration)).
+
+[![Installer dans Cursor](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/en/install-mcp?name=lws&config=eyJjb21tYW5kIjoidXZ4IiwiYXJncyI6WyItLWZyb20iLCJnaXQraHR0cHM6Ly9naXRodWIuY29tL05LU1RVRC9sd3MtbWNwIiwibHdzLW1jcCJdLCJlbnYiOnsiTFdTX0xPR0lOIjoiIiwiTFdTX0FQSV9LRVkiOiIifX0%3D)
+[![Installer dans VS Code](https://img.shields.io/badge/VS_Code-Install-0098FF?logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=lws&config=%7B%22command%22%3A%22uvx%22%2C%22args%22%3A%5B%22--from%22%2C%22git%2Bhttps%3A//github.com/NKSTUD/lws-mcp%22%2C%22lws-mcp%22%5D%2C%22env%22%3A%7B%22LWS_LOGIN%22%3A%22%22%2C%22LWS_API_KEY%22%3A%22%22%7D%7D)
+
+Les boutons laissent `LWS_LOGIN` et `LWS_API_KEY` vides : remplissez-les après l'installation.
+
+<details open>
+<summary><b>Claude Code</b></summary>
 
 ```bash
 claude mcp add lws \
@@ -54,17 +62,43 @@ claude mcp add lws \
   -e LWS_API_KEY=votre-cle-api \
   -- uvx --from git+https://github.com/NKSTUD/lws-mcp lws-mcp
 ```
+</details>
 
-### Claude Desktop, Cursor, Windsurf et autres clients
+<details>
+<summary><b>Codex</b> (CLI, extension IDE et application)</summary>
 
-À ajouter dans la configuration MCP du client (`claude_desktop_config.json`, `.cursor/mcp.json`…) :
+```bash
+codex mcp add lws \
+  --env LWS_LOGIN=123456 \
+  --env LWS_API_KEY=votre-cle-api \
+  -- uvx --from git+https://github.com/NKSTUD/lws-mcp lws-mcp
+```
+
+Ou dans `~/.codex/config.toml` :
+
+```toml
+[mcp_servers.lws]
+command = "uvx"
+args = ["--from", "git+https://github.com/NKSTUD/lws-mcp", "lws-mcp"]
+env = { LWS_LOGIN = "123456", LWS_API_KEY = "votre-cle-api" }
+```
+</details>
+
+<details>
+<summary><b>Cursor</b></summary>
+
+Utilisez le bouton ci-dessus, ou ajoutez à `~/.cursor/mcp.json` (tous les projets) ou `.cursor/mcp.json` (un projet) :
 
 ```json
 {
   "mcpServers": {
     "lws": {
       "command": "uvx",
-      "args": ["--from", "git+https://github.com/NKSTUD/lws-mcp", "lws-mcp"],
+      "args": [
+        "--from",
+        "git+https://github.com/NKSTUD/lws-mcp",
+        "lws-mcp"
+      ],
       "env": {
         "LWS_LOGIN": "123456",
         "LWS_API_KEY": "votre-cle-api"
@@ -73,6 +107,69 @@ claude mcp add lws \
   }
 }
 ```
+</details>
+
+<details>
+<summary><b>VS Code</b> (GitHub Copilot)</summary>
+
+```bash
+code --add-mcp '{"name":"lws","command":"uvx","args":["--from","git+https://github.com/NKSTUD/lws-mcp","lws-mcp"],"env":{"LWS_LOGIN":"123456","LWS_API_KEY":"votre-cle-api"}}'
+```
+
+Ou dans `.vscode/mcp.json` :
+
+```json
+{
+  "servers": {
+    "lws": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": [
+        "--from",
+        "git+https://github.com/NKSTUD/lws-mcp",
+        "lws-mcp"
+      ],
+      "env": {
+        "LWS_LOGIN": "123456",
+        "LWS_API_KEY": "votre-cle-api"
+      }
+    }
+  }
+}
+```
+</details>
+
+<details>
+<summary><b>Claude Desktop · Windsurf · Gemini CLI · autres</b></summary>
+
+Ajoutez ce bloc au fichier MCP du client :
+
+| Client | Fichier |
+| --- | --- |
+| Claude Desktop | Réglages → Développeur → Modifier la config (`claude_desktop_config.json`) |
+| Windsurf | `~/.codeium/windsurf/mcp_config.json` |
+| Gemini CLI | `~/.gemini/settings.json` |
+| Cline, Roo Code, Zed… | leurs réglages MCP, même format |
+
+```json
+{
+  "mcpServers": {
+    "lws": {
+      "command": "uvx",
+      "args": [
+        "--from",
+        "git+https://github.com/NKSTUD/lws-mcp",
+        "lws-mcp"
+      ],
+      "env": {
+        "LWS_LOGIN": "123456",
+        "LWS_API_KEY": "votre-cle-api"
+      }
+    }
+  }
+}
+```
+</details>
 
 ## Configuration
 
