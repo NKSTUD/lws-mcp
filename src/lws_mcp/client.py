@@ -70,7 +70,8 @@ class LwsClient:
             raise LwsApiError(response.status_code, "unexpected response format", body)
 
         code = body.get("code", response.status_code)
-        if code not in _SUCCESS_CODES or response.is_error:
+        # Trust the envelope over the HTTP status: "already deleted" comes as code 201 with an HTTP error status.
+        if code not in _SUCCESS_CODES:
             info = body.get("info") or response.reason_phrase
             # Access refusals nest the reason: {"info": {"status": "KO", "error": "bad source 192.0.2.7"}}.
             if isinstance(info, dict) and "error" in info:

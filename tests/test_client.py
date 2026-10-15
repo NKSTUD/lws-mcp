@@ -53,6 +53,12 @@ async def test_http_error_with_envelope(fake):
         await client_for(fake).request("GET", "/contact/0/credit")
 
 
+async def test_already_deleted_is_not_an_error(fake):
+    fake.handler = lambda request: envelope(7, code=201, info="The record 7 does not exist", status=404)
+    result = await client_for(fake).request("DELETE", "/domain/example.fr/zdns", json={"id": 7})
+    assert result["message"] == "The record 7 does not exist"
+
+
 async def test_access_refusal_is_readable(fake):
     refusal = {"code": 400, "info": {"status": "KO", "error": "bad source 192.0.2.7"}}
     fake.handler = lambda request: httpx.Response(400, json=refusal)

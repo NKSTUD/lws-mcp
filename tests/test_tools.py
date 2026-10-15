@@ -1,3 +1,5 @@
+import json
+
 import pytest
 from mcp.server.mcpserver.exceptions import ToolError
 
@@ -84,9 +86,34 @@ def test_relative_name(name, expected):
 
 async def test_add_record_shortens_full_names(make_server, fake):
     await call(make_server(), "add_dns_record", domain="Example.FR", type="CNAME", name="em.example.fr", value="x.io")
-    assert fake.last.method == "POST"
-    assert fake.last.url.path == "/v1/domain/example.fr/zdns"
-    assert fake.last_json == {"type": "CNAME", "name": "em", "value": "x.io", "ttl": 3600}
+    post = fake.requests[0]
+    assert (post.method, post.url.path) == ("POST", "/v1/domain/example.fr/zdns")
+    assert json.loads(post.content) == {"type": "CNAME", "name": "em", "value": "x.io", "ttl": 3600}
+
+
+async def test_update_returns_the_new_id(make_server, fake):
+    # LWS replaces the record under a new id but answers with the old one.
+    def handler(request):
+        if request.method == "PUT":
+            return envelope({"id": 5, "type": "TXT", "name": "t", "value": "v2", "ttl": 900}, info="Updated record")
+        a_record = {"id": 9, "type": "A", "name": "t", "value": "v2"}
+        txt_record = {"id": 6, "type": "TXT", "name": "t", "value": "v2"}
+        return envelope([a_record, txt_record])
+
+    fake.handler = handler
+    result = await call(make_server(), "update_dns_record", domain="example.fr", id=5, type="TXT", name="t", value="v2")
+    assert result["data"]["id"] == 6
+
+
+async def test_add_returns_the_id_lws_omits(make_server, fake):
+    def handler(request):
+        if request.method == "POST":
+            return envelope({"type": "CNAME", "name": "em", "value": "x.io", "ttl": 3600})
+        return envelope([{"id": 3, "type": "CNAME", "name": "em", "value": "x.io.", "ttl": 3600}])
+
+    fake.handler = handler
+    result = await call(make_server(), "add_dns_record", domain="example.fr", type="CNAME", name="em", value="x.io")
+    assert result["data"]["id"] == 3
 
 
 async def test_zone_can_be_filtered(make_server, fake):

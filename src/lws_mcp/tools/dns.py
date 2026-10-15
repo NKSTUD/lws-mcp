@@ -43,7 +43,29 @@ def relative_name(name: str, domain: str) -> str:
     return name.removesuffix(suffix)
 
 
+def _same_value(a: object, b: object) -> bool:
+    return str(a).strip().strip('"').rstrip(".").lower() == str(b).strip().strip('"').rstrip(".").lower()
+
+
 def register(server: MCPServer, client: LwsClient, settings: Settings) -> None:
+    async def saved_record(result: Result, domain: str, body: dict) -> Result:
+        """Return the record as stored, with its real id.
+
+        LWS answers an add without the id, and an update with the old id although it replaces the record
+        under a new one; reading the zone back gives the model an id it can use for the next call.
+        """
+        zone = (await client.request("GET", f"/domain/{domain}/zdns"))["data"] or []
+        matches = [
+            record
+            for record in zone
+            if str(record.get("type", "")).upper() == body["type"]
+            and relative_name(str(record.get("name", "")), domain) == body["name"]
+            and _same_value(record.get("value", ""), body["value"])
+        ]
+        if matches:
+            result["data"] = max(matches, key=lambda record: int(record.get("id") or 0))
+        return result
+
     @server.tool(annotations=READ)
     async def get_dns_zone(
         domain: Domain,
@@ -97,7 +119,8 @@ def register(server: MCPServer, client: LwsClient, settings: Settings) -> None:
     ) -> Result:
         """Add a record to a domain's DNS zone. Propagation can take up to a few hours."""
         body = {"type": type, "name": relative_name(name, domain), "value": value, "ttl": ttl}
-        return await client.request("POST", f"/domain/{domain}/zdns", json=body)
+        result = await client.request("POST", f"/domain/{domain}/zdns", json=body)
+        return await saved_record(result, domain, body)
 
     @server.tool(annotations=WRITE)
     async def update_dns_record(
@@ -108,9 +131,13 @@ def register(server: MCPServer, client: LwsClient, settings: Settings) -> None:
         value: RecordValue,
         ttl: RecordTtl = 3600,
     ) -> Result:
-        """Replace an existing DNS record. Every field is required; LWS adds the record if the id does not exist."""
+        """Replace an existing DNS record. Every field is required; LWS adds the record if the id does not exist.
+
+        The record gets a new id: use the one returned here for any later change.
+        """
         body = {"id": id, "type": type, "name": relative_name(name, domain), "value": value, "ttl": ttl}
-        return await client.request("PUT", f"/domain/{domain}/zdns", json=body)
+        result = await client.request("PUT", f"/domain/{domain}/zdns", json=body)
+        return await saved_record(result, domain, body)
 
     @server.tool(annotations=DESTRUCTIVE)
     async def delete_dns_record(domain: Domain, id: RecordId) -> Result:
