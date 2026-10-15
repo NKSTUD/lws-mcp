@@ -17,7 +17,8 @@ from .tools import MODULES
 INSTRUCTIONS = """\
 Manage domains, DNS zones, hosting and the account of an LWS (lws.fr) customer.
 - DNS: read the zone with get_dns_zone before changing it; record ids come from there.
-  After a change, check_dns_propagation shows what the internet sees (propagation can take hours).
+  After a change, check_dns_propagation compares the LWS zone, the domain's nameservers and three public
+  resolvers, and says how long a stale cached answer can last.
 - Actions marked "deferred" run in the background: follow them with list_pending_requests.
 - Tools marked PAID debit the prepaid account: always confirm the price with the user first.
 """

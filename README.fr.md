@@ -11,7 +11,7 @@ Un serveur [MCP](https://modelcontextprotocol.io) pour l'API client de [LWS](htt
 
 > *« Ajoute à exemple.fr les CNAME que Stripe m'a donnés, puis dis-moi quand ils répondent. »*
 
-Il couvre toute l'[API client LWS](https://api.lws.fr/api-client/lws-client-api) (29 routes), plus une vérification de propagation via un résolveur public.
+Il couvre toute l'[API client LWS](https://api.lws.fr/api-client/lws-client-api) (29 routes), plus une vérification de propagation qui compare votre zone LWS, ses serveurs de noms et trois résolveurs publics.
 
 > Projet communautaire, sans lien avec LWS.
 
@@ -182,7 +182,7 @@ Ajoutez ce bloc au fichier MCP du client :
 ## Bon à savoir
 
 - **Actions différées.** Changement de serveurs de noms, protection de transfert, code de transfert, achats et renouvellements sont traités en arrière-plan : suivez-les avec `list_pending_requests`.
-- **Propagation.** Un changement DNS peut mettre de quelques minutes à quelques heures à être vu partout. `check_dns_propagation` montre ce que voit le 1.1.1.1 de Cloudflare à l'instant.
+- **Propagation.** Un changement DNS peut mettre de quelques minutes à quelques heures à être vu partout : chaque résolveur garde l'ancienne réponse jusqu'à la fin de son TTL. `check_dns_propagation` compare ce qui est enregistré dans la zone LWS, ce que répondent les serveurs de noms du domaine (sans cache) et ce que répondent Cloudflare, Google et Quad9, puis indique combien de temps une ancienne réponse peut encore durer. Certains réseaux bloquent les requêtes DNS directes vers les serveurs de noms ; les résolveurs sont interrogés en HTTPS, donc cette partie fonctionne toujours.
 - **Les identifiants changent.** LWS remplace un enregistrement modifié sous un nouvel identifiant. `add_dns_record` et `update_dns_record` renvoient l'identifiant à jour.
 - **Limite de requêtes.** LWS refuse les rafales (une quinzaine d'appels d'affilée) avec `Invalid input (rate limit)` : attendez une minute et recommencez.
 - **TTL acceptés.** 900, 1800, 3600, 7200, 21600, 43200 ou 86400 secondes.

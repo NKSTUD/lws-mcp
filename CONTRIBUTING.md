@@ -22,6 +22,7 @@ uv run ruff check . && uv run ruff format --check . && uv run pytest
 src/lws_mcp/
   config.py        settings read from environment variables
   client.py        HTTP client: auth headers, LWS response envelope, errors
+  propagation.py   DNS propagation check: LWS zone vs nameservers vs public resolvers
   server.py        builds the MCP server and registers the tool modules
   tools/
     _common.py     shared types (Domain) and tool hints (READ, WRITE, DESTRUCTIVE)

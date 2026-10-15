@@ -1,6 +1,6 @@
 [project]
 name = "lws-mcp"
-version = "0.1.0"
+version = "0.2.0"
 description = "MCP server for the LWS (lws.fr) API: manage domains, DNS zones, hosting and your account from any AI assistant."
 readme = "README.md"
 license = "MIT"
@@ -22,7 +22,8 @@ classifiers = [
     "Topic :: System :: Systems Administration",
 ]
 dependencies = [
-    "httpx>=0.28.1",
+    "dnspython>=2.7",
+    "httpx[http2]>=0.28.1",
     "mcp>=2.3",
 ]
 

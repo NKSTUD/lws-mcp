@@ -1,15 +1,14 @@
-"""DNS zone records: list, add, update, delete, and check what the public internet sees."""
+"""DNS zone records: list, add, update, delete, and check that a change is live."""
 
 from __future__ import annotations
 
 from typing import Annotated, Literal
 
-import httpx
 from mcp.server.mcpserver import MCPServer
-from mcp.server.mcpserver.exceptions import ToolError
 from pydantic import Field
 
-from ..client import LwsClient
+from .. import propagation
+from ..client import LwsApiError, LwsClient
 from ..config import Settings
 from ._common import DESTRUCTIVE, READ, WRITE, Domain, Result
 
@@ -29,9 +28,6 @@ RecordName = Annotated[
 ]
 RecordValue = Annotated[str, Field(min_length=1, description="Record value: IP address, target host name, text...")]
 RecordTtl = Annotated[Ttl, Field(description="Time to live in seconds")]
-
-# Public resolver queried by check_dns_propagation (DNS over HTTPS, JSON format).
-DOH_URL = "https://cloudflare-dns.com/dns-query"
 
 
 def relative_name(name: str, domain: str) -> str:
@@ -86,29 +82,44 @@ def register(server: MCPServer, client: LwsClient, settings: Settings) -> None:
     async def check_dns_propagation(
         name: Annotated[str, Field(description="Fully qualified name to look up, e.g. _dmarc.example.fr")],
         type: Annotated[RecordType, Field(description="Record type to look up")] = "A",
+        expected: Annotated[
+            str | None, Field(description="Value you expect to see; by default, what is saved in the LWS zone")
+        ] = None,
     ) -> Result:
-        """Ask a public resolver (Cloudflare 1.1.1.1) what the internet currently sees for a name.
+        """Check whether a DNS change is live: what is saved in the LWS zone, what the domain's nameservers answer,
+        and what three public resolvers (Cloudflare, Google, Quad9) answer.
 
-        Useful after adding or changing a record: changes can take from minutes to a few hours to propagate.
+        Public resolvers can keep an old answer until its TTL expires, so they may disagree for a while after a
+        change; the answer says how long a stale one can last.
         """
         query_type = "TXT" if type == "SPF" else type
         try:
-            async with httpx.AsyncClient(timeout=settings.timeout) as resolver:
-                response = await resolver.get(
-                    DOH_URL,
-                    params={"name": name.strip(), "type": query_type},
-                    headers={"Accept": "application/dns-json"},
-                )
-                response.raise_for_status()
-                body = response.json()
-        except (httpx.HTTPError, ValueError) as exc:
-            raise ToolError(f"DNS lookup failed: {exc}") from exc
-        answers = [
-            {"name": answer.get("name"), "ttl": answer.get("TTL"), "value": answer.get("data")}
-            for answer in body.get("Answer") or []
-        ]
-        found = "found" if answers else "no answer"
-        return {"message": f"{query_type} {name}: {found}", "data": answers}
+            saved = await saved_values(name, query_type)
+            note = None
+        except LwsApiError as exc:  # still worth checking the DNS side
+            saved, note = None, f"LWS zone not read ({exc})"
+        timeout = min(settings.timeout, 5)
+        result = await propagation.check(name, query_type, saved=saved, expected=expected, timeout=timeout)
+        if note:
+            result["message"] += f"; {note}"
+        return result
+
+    async def saved_values(name: str, type: str) -> list[str] | None:
+        """Values saved in the LWS zone for this name, or None when the domain is not on the account."""
+        fqdn = name.strip().rstrip(".").lower()
+        hostings = (await client.request("GET", "/hosting/0/list"))["data"] or []
+        domains = [str(h.get("domain", "")).lower() for h in hostings]
+        domain = max((d for d in domains if d and (fqdn == d or fqdn.endswith("." + d))), key=len, default=None)
+        if domain is None:
+            return None
+        zone = (await client.request("GET", f"/domain/{domain}/zdns"))["data"] or []
+        wanted = relative_name(fqdn, domain)
+        return sorted(
+            str(record.get("value", ""))
+            for record in zone
+            if str(record.get("type", "")).upper() == type
+            and relative_name(str(record.get("name", "")), domain) == wanted
+        )
 
     if not settings.allows_writes:
         return

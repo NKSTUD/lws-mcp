@@ -11,7 +11,7 @@ An [MCP](https://modelcontextprotocol.io) server for the [LWS](https://www.lws.f
 
 > *"Add the CNAME records Stripe gave me to example.fr, then tell me when they are live."*
 
-It covers the whole [LWS Client API](https://api.lws.fr/api-client/lws-client-api) (29 endpoints), plus a propagation check through a public resolver.
+It covers the whole [LWS Client API](https://api.lws.fr/api-client/lws-client-api) (29 endpoints), plus a propagation check that compares your LWS zone, its nameservers and three public resolvers.
 
 > Community project, not affiliated with or endorsed by LWS.
 
@@ -182,7 +182,7 @@ Add this block to the client's MCP file:
 ## Good to know
 
 - **Deferred actions.** Nameserver changes, transfer protection, auth codes, purchases and renewals are processed in the background. Follow them with `list_pending_requests`.
-- **Propagation.** A DNS change can take from minutes to a few hours to be seen everywhere. `check_dns_propagation` shows what Cloudflare's 1.1.1.1 sees now.
+- **Propagation.** A DNS change can take from minutes to a few hours to be seen everywhere: each resolver keeps the old answer until its TTL runs out. `check_dns_propagation` compares what is saved in the LWS zone, what the domain's nameservers answer (no cache) and what Cloudflare, Google and Quad9 answer, then says how long a stale answer can last. Some networks block direct DNS queries to nameservers; the resolvers are asked over HTTPS, so that part always works.
 - **Record ids change.** LWS replaces a record under a new id when it is updated. `add_dns_record` and `update_dns_record` return the current id.
 - **Rate limit.** LWS refuses bursts of requests (about fifteen in a row) with `Invalid input (rate limit)`: wait a minute and retry.
 - **Allowed TTLs.** 900, 1800, 3600, 7200, 21600, 43200 or 86400 seconds.
