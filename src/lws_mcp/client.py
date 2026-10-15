@@ -78,6 +78,9 @@ class LwsClient:
                 info = info["error"]
             if isinstance(info, str) and info.startswith("bad source"):
                 info += " (this IP address is not allowed: add it in LWS Panel > Api LWS)"
+            # The rate limit comes back as 400 "Invalid input (rate limit)" rather than 429.
+            if code == 429 or (isinstance(info, str) and "rate limit" in info.lower()):
+                info += " (too many requests: wait about a minute, then retry)"
             raise LwsApiError(code, info, body.get("data"))
         return {"message": body.get("info"), "data": body.get("data")}
 

@@ -184,6 +184,7 @@ Add this block to the client's MCP file:
 - **Deferred actions.** Nameserver changes, transfer protection, auth codes, purchases and renewals are processed in the background. Follow them with `list_pending_requests`.
 - **Propagation.** A DNS change can take from minutes to a few hours to be seen everywhere. `check_dns_propagation` shows what Cloudflare's 1.1.1.1 sees now.
 - **Record ids change.** LWS replaces a record under a new id when it is updated. `add_dns_record` and `update_dns_record` return the current id.
+- **Rate limit.** LWS refuses bursts of requests (about fifteen in a row) with `Invalid input (rate limit)`: wait a minute and retry.
 - **Allowed TTLs.** 900, 1800, 3600, 7200, 21600, 43200 or 86400 seconds.
 
 ## Development

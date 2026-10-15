@@ -66,6 +66,12 @@ async def test_access_refusal_is_readable(fake):
         await client_for(fake).request("GET", "/contact/0/credit")
 
 
+async def test_rate_limit_says_to_wait(fake):
+    fake.handler = lambda request: envelope(code=400, info="Invalid input (rate limit)", status=400)
+    with pytest.raises(LwsApiError, match="wait about a minute"):
+        await client_for(fake).request("POST", "/domain/example.fr/zdns", json={})
+
+
 async def test_validation_details_are_kept(fake):
     fake.handler = lambda request: envelope({"ttl": "Invalid field"}, code=400, info="Invalid input", status=400)
     with pytest.raises(LwsApiError, match="ttl"):

@@ -184,6 +184,7 @@ Ajoutez ce bloc au fichier MCP du client :
 - **Actions différées.** Changement de serveurs de noms, protection de transfert, code de transfert, achats et renouvellements sont traités en arrière-plan : suivez-les avec `list_pending_requests`.
 - **Propagation.** Un changement DNS peut mettre de quelques minutes à quelques heures à être vu partout. `check_dns_propagation` montre ce que voit le 1.1.1.1 de Cloudflare à l'instant.
 - **Les identifiants changent.** LWS remplace un enregistrement modifié sous un nouvel identifiant. `add_dns_record` et `update_dns_record` renvoient l'identifiant à jour.
+- **Limite de requêtes.** LWS refuse les rafales (une quinzaine d'appels d'affilée) avec `Invalid input (rate limit)` : attendez une minute et recommencez.
 - **TTL acceptés.** 900, 1800, 3600, 7200, 21600, 43200 ou 86400 secondes.
 
 ## Développement
