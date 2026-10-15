@@ -1,6 +1,6 @@
 [project]
 name = "lws-mcp"
-version = "0.2.0"
+version = "0.2.1"
 description = "MCP server for the LWS (lws.fr) API: manage domains, DNS zones, hosting and your account from any AI assistant."
 readme = "README.md"
 license = "MIT"

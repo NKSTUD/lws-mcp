@@ -15,6 +15,8 @@ It covers the whole [LWS Client API](https://api.lws.fr/api-client/lws-client-ap
 
 > Community project, not affiliated with or endorsed by LWS.
 
+<!-- mcp-name: io.github.NKSTUD/lws-mcp -->
+
 ## Tools
 
 | Area | Tools |

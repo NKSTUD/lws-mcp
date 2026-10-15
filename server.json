@@ -1,0 +1,30 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.NKSTUD/lws-mcp",
+  "title": "LWS",
+  "description": "Manage LWS (lws.fr) domains, DNS zones, hosting and account from any MCP client.",
+  "repository": {
+    "url": "https://github.com/NKSTUD/lws-mcp",
+    "source": "github"
+  },
+  "version": "0.2.1",
+  "packages": [
+    {
+      "registryType": "pypi",
+      "identifier": "lws-mcp",
+      "version": "0.2.1",
+      "runtimeHint": "uvx",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        { "name": "LWS_LOGIN", "description": "Your LWS account ID (the digits of LWS-XXXXXX)", "isRequired": true },
+        { "name": "LWS_API_KEY", "description": "LWS API key (LWS Panel > Api LWS)", "isRequired": true, "isSecret": true },
+        { "name": "LWS_READ_ONLY", "description": "true to expose only read tools", "default": "false" },
+        { "name": "LWS_ENABLE_PURCHASES", "description": "true to expose the paid tools (buy, renew)", "default": "false" },
+        { "name": "LWS_TEST_MODE", "description": "true to use the LWS test environment", "default": "false" },
+        { "name": "LWS_TEST_API_KEY", "description": "Test key, used instead of LWS_API_KEY in test mode", "isSecret": true }
+      ]
+    }
+  ]
+}

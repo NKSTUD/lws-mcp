@@ -4,6 +4,13 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-10-15
+
+### Added
+
+- Listed in the official MCP Registry as `io.github.NKSTUD/lws-mcp` (`server.json`); every GitHub release now
+  publishes to PyPI and then to the registry.
+
 ## [0.2.0] - 2026-10-15
 
 ### Changed
@@ -24,6 +31,7 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 - Safety settings: `LWS_READ_ONLY`, `LWS_ENABLE_PURCHASES` (off by default), `LWS_TEST_MODE` with `LWS_TEST_API_KEY`.
 - Full DNS names are shortened to the relative form the LWS zone expects.
 
-[Unreleased]: https://github.com/NKSTUD/lws-mcp/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/NKSTUD/lws-mcp/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/NKSTUD/lws-mcp/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/NKSTUD/lws-mcp/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/NKSTUD/lws-mcp/releases/tag/v0.1.0

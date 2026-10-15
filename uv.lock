@@ -445,7 +445,7 @@ wheels = [
 
 [[package]]
 name = "lws-mcp"
-version = "0.2.0"
+version = "0.2.1"
 source = { editable = "." }
 dependencies = [
     { name = "dnspython", version = "2.8.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },

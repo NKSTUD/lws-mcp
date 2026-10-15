@@ -14,8 +14,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6
-      - name: Check the tag matches the package version
-        run: test "v$(uv version --short)" = "${{ github.event.release.tag_name }}"
+      - name: Check the tag matches the package and server.json versions
+        run: |
+          tag="${{ github.event.release.tag_name }}"
+          test "v$(uv version --short)" = "$tag"
+          test "v$(jq -r .version server.json)" = "$tag"
+          test "v$(jq -r '.packages[0].version' server.json)" = "$tag"
       - run: uv sync --locked
       - run: uv run pytest
       - run: uv build
@@ -38,3 +42,24 @@ jobs:
           name: dist
           path: dist/
       - uses: pypa/gh-action-pypi-publish@release/v1
+
+  # Listing in the official MCP Registry (registry.modelcontextprotocol.io), after PyPI has the version:
+  # the registry checks the package and the "mcp-name" line of its README. GitHub OIDC, no secret.
+  registry:
+    needs: publish
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install mcp-publisher
+        run: curl -sL "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_linux_amd64.tar.gz" | tar xz mcp-publisher
+      - run: ./mcp-publisher login github-oidc
+      - name: Publish (retried while PyPI propagates the new version)
+        run: |
+          for attempt in 1 2 3 4 5; do
+            ./mcp-publisher publish && exit 0
+            sleep 30
+          done
+          exit 1
