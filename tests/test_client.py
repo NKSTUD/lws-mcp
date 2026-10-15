@@ -53,9 +53,10 @@ async def test_http_error_with_envelope(fake):
         await client_for(fake).request("GET", "/contact/0/credit")
 
 
-async def test_bad_credentials_answer(fake):
-    fake.handler = lambda request: httpx.Response(400, json={"status": "KO", "error": "bad credentials"})
-    with pytest.raises(LwsApiError, match="400: bad credentials"):
+async def test_access_refusal_is_readable(fake):
+    refusal = {"code": 400, "info": {"status": "KO", "error": "bad source 192.0.2.7"}}
+    fake.handler = lambda request: httpx.Response(400, json=refusal)
+    with pytest.raises(LwsApiError, match=r"400: bad source 192\.0\.2\.7 \(this IP address is not allowed"):
         await client_for(fake).request("GET", "/contact/0/credit")
 
 

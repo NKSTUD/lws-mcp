@@ -41,6 +41,7 @@ Un assistant qui touche à vos DNS peut couper un site ou une boîte mail, et un
 ## Prérequis
 
 - Un compte LWS et sa clé API : [LWS Panel](https://www.lws.fr/panel) → votre numéro (LWS-XXXXXX, en haut à droite) → **Api LWS** → **Clé API en mode PRODUCTION** → *voir*. [Guide LWS](https://aide.lws.fr/a/1943).
+- L'adresse IP publique de la machine qui lance le serveur, autorisée sur la même page **Api LWS**. Sinon chaque appel échoue avec `bad source <votre IP>`.
 - [uv](https://docs.astral.sh/uv/getting-started/installation/) (il installe Python et le serveur pour vous).
 
 ## Installation

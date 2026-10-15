@@ -71,8 +71,12 @@ class LwsClient:
 
         code = body.get("code", response.status_code)
         if code not in _SUCCESS_CODES or response.is_error:
-            # Authentication failures skip the envelope: {"status": "KO", "error": "bad credentials"}.
-            info = body.get("info") or body.get("error") or response.reason_phrase
+            info = body.get("info") or response.reason_phrase
+            # Access refusals nest the reason: {"info": {"status": "KO", "error": "bad source 192.0.2.7"}}.
+            if isinstance(info, dict) and "error" in info:
+                info = info["error"]
+            if isinstance(info, str) and info.startswith("bad source"):
+                info += " (this IP address is not allowed: add it in LWS Panel > Api LWS)"
             raise LwsApiError(code, info, body.get("data"))
         return {"message": body.get("info"), "data": body.get("data")}
 

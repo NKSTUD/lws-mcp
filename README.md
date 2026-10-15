@@ -41,6 +41,7 @@ An assistant with access to your DNS can take a site or a mailbox down, and one 
 ## Requirements
 
 - An LWS account and its API key: [LWS Panel](https://www.lws.fr/panel) → your account number (LWS-XXXXXX, top right) → **Api LWS** → **Clé API en mode PRODUCTION** → *voir*. [LWS guide](https://aide.lws.fr/a/1943).
+- The public IP address of the machine running the server, allowed on the same **Api LWS** page. Otherwise every call fails with `bad source <your IP>`.
 - [uv](https://docs.astral.sh/uv/getting-started/installation/) (it fetches Python and the server for you).
 
 ## Installation
