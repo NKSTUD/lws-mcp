@@ -8,6 +8,7 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ### Added
 
+- Published on PyPI: `uvx lws-mcp`.
 - Tools for the whole LWS Client API: DNS zone, domains, hosting, account and contacts, deferred requests.
 - `check_dns_propagation`, to see what a public resolver answers after a change.
 - Safety settings: `LWS_READ_ONLY`, `LWS_ENABLE_PURCHASES` (off by default), `LWS_TEST_MODE` with `LWS_TEST_API_KEY`.

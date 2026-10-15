@@ -2,6 +2,7 @@
 
 [![CI](https://github.com/NKSTUD/lws-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/NKSTUD/lws-mcp/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![PyPI](https://img.shields.io/pypi/v/lws-mcp.svg)](https://pypi.org/project/lws-mcp/)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](pyproject.toml)
 
 **English** · [Français](README.fr.md)
@@ -46,10 +47,10 @@ An assistant with access to your DNS can take a site or a mailbox down, and one 
 
 ## Installation
 
-Every client runs the same command, `uvx --from git+https://github.com/NKSTUD/lws-mcp lws-mcp`, with `LWS_LOGIN` and `LWS_API_KEY` in its environment (see [Configuration](#configuration) for the optional settings).
+Every client runs the same command, `uvx lws-mcp`, with `LWS_LOGIN` and `LWS_API_KEY` in its environment (see [Configuration](#configuration) for the optional settings).
 
-[![Install in Cursor](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/en/install-mcp?name=lws&config=eyJjb21tYW5kIjoidXZ4IiwiYXJncyI6WyItLWZyb20iLCJnaXQraHR0cHM6Ly9naXRodWIuY29tL05LU1RVRC9sd3MtbWNwIiwibHdzLW1jcCJdLCJlbnYiOnsiTFdTX0xPR0lOIjoiIiwiTFdTX0FQSV9LRVkiOiIifX0%3D)
-[![Install in VS Code](https://img.shields.io/badge/VS_Code-Install-0098FF?logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=lws&config=%7B%22command%22%3A%22uvx%22%2C%22args%22%3A%5B%22--from%22%2C%22git%2Bhttps%3A//github.com/NKSTUD/lws-mcp%22%2C%22lws-mcp%22%5D%2C%22env%22%3A%7B%22LWS_LOGIN%22%3A%22%22%2C%22LWS_API_KEY%22%3A%22%22%7D%7D)
+[![Install in Cursor](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/en/install-mcp?name=lws&config=eyJjb21tYW5kIjoidXZ4IiwiYXJncyI6WyJsd3MtbWNwIl0sImVudiI6eyJMV1NfTE9HSU4iOiIiLCJMV1NfQVBJX0tFWSI6IiJ9fQ%3D%3D)
+[![Install in VS Code](https://img.shields.io/badge/VS_Code-Install-0098FF?logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=lws&config=%7B%22command%22%3A%22uvx%22%2C%22args%22%3A%5B%22lws-mcp%22%5D%2C%22env%22%3A%7B%22LWS_LOGIN%22%3A%22%22%2C%22LWS_API_KEY%22%3A%22%22%7D%7D)
 
 The buttons leave `LWS_LOGIN` and `LWS_API_KEY` empty: fill them in after installing.
 
@@ -60,7 +61,7 @@ The buttons leave `LWS_LOGIN` and `LWS_API_KEY` empty: fill them in after instal
 claude mcp add lws \
   -e LWS_LOGIN=123456 \
   -e LWS_API_KEY=your-api-key \
-  -- uvx --from git+https://github.com/NKSTUD/lws-mcp lws-mcp
+  -- uvx lws-mcp
 ```
 </details>
 
@@ -71,7 +72,7 @@ claude mcp add lws \
 codex mcp add lws \
   --env LWS_LOGIN=123456 \
   --env LWS_API_KEY=your-api-key \
-  -- uvx --from git+https://github.com/NKSTUD/lws-mcp lws-mcp
+  -- uvx lws-mcp
 ```
 
 Or in `~/.codex/config.toml`:
@@ -79,7 +80,7 @@ Or in `~/.codex/config.toml`:
 ```toml
 [mcp_servers.lws]
 command = "uvx"
-args = ["--from", "git+https://github.com/NKSTUD/lws-mcp", "lws-mcp"]
+args = ["lws-mcp"]
 env = { LWS_LOGIN = "123456", LWS_API_KEY = "your-api-key" }
 ```
 </details>
@@ -95,8 +96,6 @@ Use the button above, or add to `~/.cursor/mcp.json` (all projects) or `.cursor/
     "lws": {
       "command": "uvx",
       "args": [
-        "--from",
-        "git+https://github.com/NKSTUD/lws-mcp",
         "lws-mcp"
       ],
       "env": {
@@ -113,7 +112,7 @@ Use the button above, or add to `~/.cursor/mcp.json` (all projects) or `.cursor/
 <summary><b>VS Code</b> (GitHub Copilot)</summary>
 
 ```bash
-code --add-mcp '{"name":"lws","command":"uvx","args":["--from","git+https://github.com/NKSTUD/lws-mcp","lws-mcp"],"env":{"LWS_LOGIN":"123456","LWS_API_KEY":"your-api-key"}}'
+code --add-mcp '{"name":"lws","command":"uvx","args":["lws-mcp"],"env":{"LWS_LOGIN":"123456","LWS_API_KEY":"your-api-key"}}'
 ```
 
 Or in `.vscode/mcp.json`:
@@ -125,8 +124,6 @@ Or in `.vscode/mcp.json`:
       "type": "stdio",
       "command": "uvx",
       "args": [
-        "--from",
-        "git+https://github.com/NKSTUD/lws-mcp",
         "lws-mcp"
       ],
       "env": {
@@ -157,8 +154,6 @@ Add this block to the client's MCP file:
     "lws": {
       "command": "uvx",
       "args": [
-        "--from",
-        "git+https://github.com/NKSTUD/lws-mcp",
         "lws-mcp"
       ],
       "env": {
